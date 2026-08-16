@@ -30,6 +30,26 @@
 					},
 					"firstRowOnly": false
 				}
+			},
+			{
+				"name": "FE_Process_Tables",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LKP_Control_Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LKP_Control_Metadata').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false
+				}
 			}
 		],
 		"annotations": []
