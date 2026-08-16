@@ -257,7 +257,17 @@
 										},
 										"userProperties": [],
 										"typeProperties": {
-											"storedProcedureName": "[dbo].[usp_UpdateControlWatermark]"
+											"storedProcedureName": "[dbo].[usp_UpdateControlWatermark]",
+											"storedProcedureParameters": {
+												"control_id": {
+													"value": "@item().control_id",
+													"type": "Int32"
+												},
+												"last_load_value": {
+													"value": "@activity('LKP_MSSQL_Max_Watermark').output.firstRow.max_watermark",
+													"type": "DateTime"
+												}
+											}
 										},
 										"linkedServiceName": {
 											"referenceName": "LS_AzureSQL_Control",
