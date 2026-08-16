@@ -116,7 +116,11 @@
 										"outputs": [
 											{
 												"referenceName": "DS_ADLS_Bronze",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"targetPath": "@item().target_path",
+													"loadDate": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
+												}
 											}
 										]
 									},
