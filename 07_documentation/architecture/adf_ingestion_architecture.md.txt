@@ -1,41 +1,18 @@
-# Azure Data Factory Ingestion Architecture
+# 🔄 Azure Data Factory Ingestion Architecture
 
-Azure Data Factory is used as the ingestion and orchestration layer.
+Azure Data Factory (ADF) is used as the ingestion and orchestration
+layer of the Automobile Showroom Analytics project.
 
-## Sources
+## 📌 Source Systems
 
 - Microsoft SQL Server
 - PostgreSQL
 
-## Destination
+## 🎯 Target
 
-Azure Data Lake Storage Gen2 Bronze layer.
+Azure Data Lake Storage Gen2 - Bronze Layer
 
-## Ingestion Strategy
-
-The pipeline uses metadata and watermark-based incremental loading.
-
-Each source table has:
-
-- Source system
-- Table name
-- Watermark column
-- Last loaded watermark value
-
-## Initial Load
-
-The first execution loads all existing records.
-
-Initial watermark:
-
-1999-01-01
-
-## Incremental Load
-
-Subsequent executions load only records where the watermark
-column is greater than the previously stored watermark value.
-
-## High-Level Flow
+## 🔄 Ingestion Flow
 
 MSSQL + PostgreSQL
         ↓
@@ -48,3 +25,41 @@ Incremental Query
 Copy Activity
         ↓
 ADLS Gen2 Bronze
+
+## 📦 Load Strategy
+
+The project supports both full load and incremental load.
+
+### 🟢 First Run
+
+The initial execution loads the existing source data into
+the Bronze layer.
+
+Initial watermark:
+
+1999-01-01
+
+### 🔵 Subsequent Runs
+
+Later executions use the previously stored watermark value.
+
+Only new or modified records are loaded.
+
+Example:
+
+updated_date > last_load_value
+
+## 🗂️ Control Metadata
+
+A control table will maintain:
+
+- Source system
+- Table name
+- Watermark column
+- Last loaded value
+
+## 🔐 Security
+
+Credentials and secrets must not be stored in GitHub.
+
+Azure identity-based authentication will be used wherever possible.
