@@ -1,0 +1,61 @@
+{
+	"name": "DS_AzureSQL_Control",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureSQL_Control",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "control_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "source_system",
+				"type": "varchar"
+			},
+			{
+				"name": "table_name",
+				"type": "varchar"
+			},
+			{
+				"name": "watermark_column",
+				"type": "varchar"
+			},
+			{
+				"name": "last_load_value",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "target_container",
+				"type": "varchar"
+			},
+			{
+				"name": "target_path",
+				"type": "varchar"
+			},
+			{
+				"name": "is_active",
+				"type": "bit"
+			},
+			{
+				"name": "created_date",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "updated_date",
+				"type": "datetime2",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "data_factory_control_log"
+		}
+	}
+}
