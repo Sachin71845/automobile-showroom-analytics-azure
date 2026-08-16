@@ -1,0 +1,24 @@
+{
+	"name": "DS_PostgreSQL_Source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_PostgreSQL_Showroom",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "PostgreSqlV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
