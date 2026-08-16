@@ -1,0 +1,32 @@
+{
+	"name": "TRG_Monthly_First_Day",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_Master_Ingestion",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Month",
+				"interval": 1,
+				"startTime": "2026-08-16T18:14:00",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"hours": [
+						11
+					],
+					"monthDays": [
+						1
+					]
+				}
+			}
+		}
+	}
+}
