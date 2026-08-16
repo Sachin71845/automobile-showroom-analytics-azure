@@ -59,7 +59,75 @@
 								"expression": {
 									"value": "@equals(item().source_system,'MSSQL')",
 									"type": "Expression"
-								}
+								},
+								"ifTrueActivities": [
+									{
+										"name": "CP_MSSQL_To_Bronze",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n'SELECT * FROM dbo.',\nitem().table_name,\n' WHERE ',\nitem().watermark_column,\n' > ''',\nitem().last_load_value,\n''''\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "ParquetSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "ParquetWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_MSSQL_Source",
+												"type": "DatasetReference",
+												"parameters": {
+													"tableName": {
+														"value": "@item().table_name",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_ADLS_Bronze",
+												"type": "DatasetReference",
+												"parameters": {
+													"tableName": {
+														"value": "@item().table_name",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								]
 							}
 						}
 					]
