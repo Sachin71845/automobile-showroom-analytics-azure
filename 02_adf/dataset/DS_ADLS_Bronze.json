@@ -20,6 +20,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().loadDate",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().targetPath",
+					"type": "Expression"
+				},
 				"fileSystem": "bronze"
 			},
 			"compressionCodec": "snappy"
