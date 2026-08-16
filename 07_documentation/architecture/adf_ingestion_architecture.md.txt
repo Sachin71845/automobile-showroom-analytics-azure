@@ -1,0 +1,50 @@
+# Azure Data Factory Ingestion Architecture
+
+Azure Data Factory is used as the ingestion and orchestration layer.
+
+## Sources
+
+- Microsoft SQL Server
+- PostgreSQL
+
+## Destination
+
+Azure Data Lake Storage Gen2 Bronze layer.
+
+## Ingestion Strategy
+
+The pipeline uses metadata and watermark-based incremental loading.
+
+Each source table has:
+
+- Source system
+- Table name
+- Watermark column
+- Last loaded watermark value
+
+## Initial Load
+
+The first execution loads all existing records.
+
+Initial watermark:
+
+1999-01-01
+
+## Incremental Load
+
+Subsequent executions load only records where the watermark
+column is greater than the previously stored watermark value.
+
+## High-Level Flow
+
+MSSQL + PostgreSQL
+        ↓
+Azure Data Factory
+        ↓
+Metadata / Watermark Lookup
+        ↓
+Incremental Query
+        ↓
+Copy Activity
+        ↓
+ADLS Gen2 Bronze
