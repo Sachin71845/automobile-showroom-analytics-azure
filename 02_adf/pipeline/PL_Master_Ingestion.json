@@ -48,7 +48,21 @@
 						"value": "@activity('LKP_Control_Metadata').output.value",
 						"type": "Expression"
 					},
-					"isSequential": false
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "IF_Source_System",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().source_system,'MSSQL')",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
