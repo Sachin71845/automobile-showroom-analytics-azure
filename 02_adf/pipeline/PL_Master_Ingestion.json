@@ -201,6 +201,41 @@
 												}
 											}
 										]
+									},
+									{
+										"name": "LKP_MSSQL_Max_Watermark",
+										"type": "Lookup",
+										"dependsOn": [
+											{
+												"activity": "CP_MSSQL_To_Bronze",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": "@concat(\n'SELECT MAX(',\nitem().watermark_column,\n') AS max_watermark FROM dbo.',\nitem().table_name\n)",
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_MSSQL_Source",
+												"type": "DatasetReference",
+												"parameters": {
+													"tableName": "@item().table_name"
+												}
+											}
+										}
 									}
 								]
 							}
