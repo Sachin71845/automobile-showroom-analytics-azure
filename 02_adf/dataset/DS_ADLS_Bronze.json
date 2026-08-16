@@ -1,0 +1,35 @@
+{
+	"name": "DS_ADLS_Bronze",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_Showroom",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string"
+			},
+			"loadDate": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().loadDate",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().tableName",
+					"type": "Expression"
+				},
+				"fileSystem": "bronze"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
