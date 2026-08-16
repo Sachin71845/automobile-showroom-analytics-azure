@@ -127,11 +127,13 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"tableName": {
-						"type": "string"
+					"targetPath": {
+						"type": "string",
+						"defaultValue": "@item().target_path"
 					},
 					"loadDate": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
 					}
 				},
 				"annotations": [],
@@ -144,7 +146,7 @@
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@dataset().tableName",
+							"value": "@dataset().targetPath",
 							"type": "Expression"
 						},
 						"fileSystem": "bronze"
@@ -283,52 +285,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_Master_Ingestion')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LKP_Control_Metadata",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "SELECT\n    control_id,\n    source_system,\n    table_name,\n    watermark_column,\n    last_load_value,\n    target_container,\n    target_path,\n    is_active\nFROM dbo.data_factory_control_log\nWHERE is_active = 1\nORDER BY control_id;",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_AzureSQL_Control",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_AzureSQL_Control')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/DS_MSSQL_Source')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -384,6 +340,408 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_PostgreSQL_Showroom')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Master_Ingestion')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LKP_Control_Metadata",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "SELECT\n    control_id,\n    source_system,\n    table_name,\n    watermark_column,\n    last_load_value,\n    target_container,\n    target_path,\n    is_active\nFROM dbo.data_factory_control_log\nWHERE is_active = 1\nORDER BY control_id;",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_AzureSQL_Control",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "FE_Process_Tables",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LKP_Control_Metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LKP_Control_Metadata').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "IF_Source_System",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@equals(item().source_system,'MSSQL')",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "CP_PostgreSQL_To_Bronze",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "PostgreSqlV2Source",
+														"query": {
+															"value": "@concat(\n'SELECT * FROM public.',\nitem().table_name,\n' WHERE ',\nitem().watermark_column,\n' > CAST(''',\nitem().last_load_value,\n''' AS TIMESTAMP)'\n)",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00"
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "DS_PostgreSQL_Source",
+														"type": "DatasetReference",
+														"parameters": {
+															"tablename": {
+																"value": "@item().table_name",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "DS_ADLS_Bronze",
+														"type": "DatasetReference",
+														"parameters": {
+															"targetPath": "@item().target_path",
+															"loadDate": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
+														}
+													}
+												]
+											},
+											{
+												"name": "LKP_PostgreSQL_Max_Watermark",
+												"type": "Lookup",
+												"dependsOn": [
+													{
+														"activity": "CP_PostgreSQL_To_Bronze",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "PostgreSqlV2Source",
+														"query": {
+															"value": "@concat(\n'SELECT MAX(',\nitem().watermark_column,\n') AS max_watermark FROM public.',\nitem().table_name\n)",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00"
+													},
+													"dataset": {
+														"referenceName": "DS_PostgreSQL_Source",
+														"type": "DatasetReference",
+														"parameters": {
+															"tablename": {
+																"value": "@item().table_name\n",
+																"type": "Expression"
+															}
+														}
+													}
+												}
+											},
+											{
+												"name": "SP_Update_PostgreSQL_Control_Watermark",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "LKP_PostgreSQL_Max_Watermark",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[[dbo].[usp_UpdateControlWatermark]",
+													"storedProcedureParameters": {
+														"control_id": {
+															"value": "@item().control_id",
+															"type": "Int32"
+														},
+														"last_load_value": {
+															"value": "@activity('LKP_PostgreSQL_Max_Watermark').output.firstRow.max_watermark",
+															"type": "DateTime"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "LS_AzureSQL_Control",
+													"type": "LinkedServiceReference"
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "CP_MSSQL_To_Bronze",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"sqlReaderQuery": {
+															"value": "@concat(\n'SELECT * FROM dbo.',\nitem().table_name,\n' WHERE ',\nitem().watermark_column,\n' > ''',\nitem().last_load_value,\n''''\n)",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "DS_MSSQL_Source",
+														"type": "DatasetReference",
+														"parameters": {
+															"tableName": {
+																"value": "@item().table_name",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "DS_ADLS_Bronze",
+														"type": "DatasetReference",
+														"parameters": {
+															"targetPath": "@item().target_path",
+															"loadDate": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
+														}
+													}
+												]
+											},
+											{
+												"name": "LKP_MSSQL_Max_Watermark",
+												"type": "Lookup",
+												"dependsOn": [
+													{
+														"activity": "CP_MSSQL_To_Bronze",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"sqlReaderQuery": "@concat(\n'SELECT MAX(',\nitem().watermark_column,\n') AS max_watermark FROM dbo.',\nitem().table_name\n)",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"dataset": {
+														"referenceName": "DS_MSSQL_Source",
+														"type": "DatasetReference",
+														"parameters": {
+															"tableName": "@item().table_name"
+														}
+													}
+												}
+											},
+											{
+												"name": "SP_Update_MSSQL_Control_Watermark",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "LKP_MSSQL_Max_Watermark",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[[dbo].[usp_UpdateControlWatermark]",
+													"storedProcedureParameters": {
+														"control_id": {
+															"value": "@item().control_id",
+															"type": "Int32"
+														},
+														"last_load_value": {
+															"value": "@activity('LKP_MSSQL_Max_Watermark').output.firstRow.max_watermark",
+															"type": "DateTime"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "LS_AzureSQL_Control",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_AzureSQL_Control')]",
+				"[concat(variables('factoryId'), '/datasets/DS_MSSQL_Source')]",
+				"[concat(variables('factoryId'), '/datasets/DS_ADLS_Bronze')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureSQL_Control')]",
+				"[concat(variables('factoryId'), '/datasets/DS_PostgreSQL_Source')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TRG_Monthly_First_Day')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PL_Master_Ingestion",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Month",
+						"interval": 1,
+						"startTime": "2026-08-16T18:14:00",
+						"timeZone": "India Standard Time",
+						"schedule": {
+							"hours": [
+								11
+							],
+							"monthDays": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PL_Master_Ingestion')]"
 			]
 		}
 	]
