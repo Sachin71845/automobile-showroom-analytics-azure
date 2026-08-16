@@ -423,3 +423,15 @@ SELECT * FROM dbo.campaign_expense;
 SELECT * FROM dbo.test_drive;
 
 
+SELECT COUNT(*) AS showroom_count FROM dbo.showroom;
+SELECT COUNT(*) AS salesperson_count FROM dbo.salesperson;
+SELECT COUNT(*) AS customer_count FROM dbo.customer;
+SELECT COUNT(*) AS campaign_count FROM dbo.campaign;
+SELECT COUNT(*) AS lead_count FROM dbo.marketing_lead;
+SELECT COUNT(*) AS visit_count FROM dbo.showroom_visit;
+SELECT COUNT(*) AS test_drive_count FROM dbo.test_drive;
+SELECT COUNT(*) AS followup_count FROM dbo.customer_followup;
+SELECT COUNT(*) AS inventory_count FROM dbo.inventory;
+SELECT COUNT(*) AS sales_count FROM dbo.sales;
+SELECT COUNT(*) AS expense_count FROM dbo.expenses;
+SELECT COUNT(*) AS campaign_expense_count FROM dbo.campaign_expense;
