@@ -122,6 +122,10 @@
 													"tableName": {
 														"value": "@item().table_name",
 														"type": "Expression"
+													},
+													"loadDate": {
+														"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
+														"type": "Expression"
 													}
 												}
 											}
