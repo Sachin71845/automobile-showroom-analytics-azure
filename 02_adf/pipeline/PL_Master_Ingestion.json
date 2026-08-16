@@ -17,7 +17,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT\n    control_id,\n    source_system,\n    source_schema,\n    source_table,\n    watermark_column,\n    last_load_value,\n    target_container,\n    target_folder,\n    is_active\nFROM dbo.data_factory_control_log\nWHERE is_active = 1\nORDER BY control_id;",
+						"sqlReaderQuery": {
+							"value": "SELECT\n    control_id,\n    source_system,\n    table_name,\n    watermark_column,\n    last_load_value,\n    target_container,\n    target_path,\n    is_active\nFROM dbo.data_factory_control_log\nWHERE is_active = 1\nORDER BY control_id;",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
