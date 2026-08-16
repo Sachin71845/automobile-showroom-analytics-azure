@@ -116,18 +116,7 @@
 										"outputs": [
 											{
 												"referenceName": "DS_ADLS_Bronze",
-												"type": "DatasetReference",
-												"parameters": {
-													"tableName": {
-														"value": "@item().table_name",
-														"type": "Expression"
-													},
-													"loadDate": {
-														"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
-														"type": "Expression"
-													},
-													"containerName": "@item().target_container"
-												}
+												"type": "DatasetReference"
 											}
 										]
 									},
@@ -268,15 +257,8 @@
 												"referenceName": "DS_ADLS_Bronze",
 												"type": "DatasetReference",
 												"parameters": {
-													"tableName": {
-														"value": "@item().table_name",
-														"type": "Expression"
-													},
-													"loadDate": {
-														"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
-														"type": "Expression"
-													},
-													"containerName": "@item().target_container"
+													"targetPath": "@item().target_path",
+													"loadDate": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
 												}
 											}
 										]
