@@ -1,0 +1,24 @@
+{
+	"name": "LS_MSSQL_Showroom",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "localhost",
+			"database": "Car_Showroom_Enterprise",
+			"encrypt": "mandatory",
+			"trustServerCertificate": true,
+			"authenticationType": "SQL",
+			"userName": "ADF_Showroom_User",
+			"alwaysEncryptedSettings": {
+				"alwaysEncryptedAkvAuthType": "ManagedIdentity"
+			},
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIwYjJhNTkzMy00M2ZmLTQ1ZDgtOGY1OS0yNjc5NzQ5ZTE5MDQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SHIR-Showroom-Local",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
