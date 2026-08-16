@@ -11,6 +11,9 @@
 			},
 			"loadDate": {
 				"type": "string"
+			},
+			"containerName": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -26,7 +29,7 @@
 					"value": "@dataset().tableName",
 					"type": "Expression"
 				},
-				"fileSystem": "bronze"
+				"fileSystem": "@dataset().containerName"
 			},
 			"compressionCodec": "snappy"
 		},
