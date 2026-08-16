@@ -6,14 +6,13 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"tableName": {
-				"type": "string"
+			"targetPath": {
+				"type": "string",
+				"defaultValue": "@item().target_path"
 			},
 			"loadDate": {
-				"type": "string"
-			},
-			"containerName": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
 			}
 		},
 		"annotations": [],
@@ -21,15 +20,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@dataset().loadDate",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@dataset().tableName",
-					"type": "Expression"
-				},
-				"fileSystem": "@dataset().containerName"
+				"fileSystem": "bronze"
 			},
 			"compressionCodec": "snappy"
 		},
