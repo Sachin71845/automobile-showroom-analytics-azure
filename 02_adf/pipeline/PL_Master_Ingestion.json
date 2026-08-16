@@ -169,6 +169,43 @@
 												}
 											}
 										}
+									},
+									{
+										"name": "SP_Update_PostgreSQL_Control_Watermark",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "LKP_PostgreSQL_Max_Watermark",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_UpdateControlWatermark]",
+											"storedProcedureParameters": {
+												"control_id": {
+													"value": "@item().control_id",
+													"type": "Int32"
+												},
+												"last_load_value": {
+													"value": "@activity('LKP_PostgreSQL_Max_Watermark').output.firstRow.max_watermark",
+													"type": "DateTime"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_AzureSQL_Control",
+											"type": "LinkedServiceReference"
+										}
 									}
 								],
 								"ifTrueActivities": [
