@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-showroom-analytics"
+		},
+		"LS_ADLS_Showroom_accountKey": {
+			"value": ""
+		},
+		"LS_AzureSQL_Control_password": {
+			"value": ""
+		},
+		"LS_MSSQL_Showroom_password": {
+			"value": ""
+		},
+		"LS_PostgreSQL_Showroom_password": {
+			"value": ""
+		},
+		"LS_ADLS_Showroom_properties_typeProperties_url": {
+			"value": "https://stshowroomanalytics01.dfs.core.windows.net/"
+		},
+		"LS_AzureSQL_Control_properties_typeProperties_server": {
+			"value": "sql-showroom-control.database.windows.net"
+		},
+		"LS_AzureSQL_Control_properties_typeProperties_database": {
+			"value": "ShowroomControlDB"
+		},
+		"LS_AzureSQL_Control_properties_typeProperties_userName": {
+			"value": "Sachin"
+		},
+		"LS_MSSQL_Showroom_properties_typeProperties_server": {
+			"value": "localhost"
+		},
+		"LS_MSSQL_Showroom_properties_typeProperties_database": {
+			"value": "Car_Showroom_Enterprise"
+		},
+		"LS_MSSQL_Showroom_properties_typeProperties_userName": {
+			"value": "ADF_Showroom_User"
+		},
+		"LS_PostgreSQL_Showroom_properties_typeProperties_server": {
+			"value": "localhost"
+		},
+		"LS_PostgreSQL_Showroom_properties_typeProperties_database": {
+			"value": "car_showroom_master"
+		},
+		"LS_PostgreSQL_Showroom_properties_typeProperties_username": {
+			"value": "postgres"
+		}
+	}
+}
