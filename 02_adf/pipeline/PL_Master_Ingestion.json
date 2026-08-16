@@ -125,7 +125,8 @@
 													"loadDate": {
 														"value": "@formatDateTime(utcnow(),'yyyy-MM-dd')",
 														"type": "Expression"
-													}
+													},
+													"containerName": "@item().target_container"
 												}
 											}
 										]
