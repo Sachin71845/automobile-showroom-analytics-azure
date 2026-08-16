@@ -77,7 +77,7 @@
 											"source": {
 												"type": "PostgreSqlV2Source",
 												"query": {
-													"value": "@concat(\n'SELECT * FROM public.',\nitem().table_name,\n' WHERE ',\nitem().watermark_column,\n' > ''',\nitem().last_load_value,\n''''\n)",
+													"value": "@concat(\n'SELECT * FROM public.',\nitem().table_name,\n' WHERE ',\nitem().watermark_column,\n' > CAST(''',\nitem().last_load_value,\n''' AS TIMESTAMP)'\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00"
