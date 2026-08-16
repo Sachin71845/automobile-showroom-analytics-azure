@@ -129,6 +129,46 @@
 												}
 											}
 										]
+									},
+									{
+										"name": "LKP_PostgreSQL_Max_Watermark",
+										"type": "Lookup",
+										"dependsOn": [
+											{
+												"activity": "CP_PostgreSQL_To_Bronze",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "PostgreSqlV2Source",
+												"query": {
+													"value": "@concat(\n'SELECT MAX(',\nitem().watermark_column,\n') AS max_watermark FROM public.',\nitem().table_name\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00"
+											},
+											"dataset": {
+												"referenceName": "DS_PostgreSQL_Source",
+												"type": "DatasetReference",
+												"parameters": {
+													"tablename": {
+														"value": "@item().table_name\n",
+														"type": "Expression"
+													}
+												}
+											}
+										}
 									}
 								],
 								"ifTrueActivities": [
