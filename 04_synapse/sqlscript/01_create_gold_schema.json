@@ -1,5 +1,5 @@
 {
-	"name": "SQL script 1",
+	"name": "01_create_gold_schema",
 	"properties": {
 		"content": {
 			"query": "CREATE SCHEMA gold;",
