@@ -1,0 +1,2 @@
+CREATE DATABASE showroom_analytics
+COLLATE Latin1_General_100_BIN2_UTF8;
