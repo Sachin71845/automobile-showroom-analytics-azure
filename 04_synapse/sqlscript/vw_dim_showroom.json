@@ -1,0 +1,17 @@
+{
+	"name": "vw_dim_showroom",
+	"properties": {
+		"content": {
+			"query": "CREATE OR ALTER VIEW gold.vw_dim_showroom\nAS\nSELECT *\nFROM OPENROWSET(\n    BULK 'https://stshowroomanalytics01.dfs.core.windows.net/gold/dim_showroom',\n    FORMAT = 'DELTA'\n) AS result;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "showroom_analytics",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
