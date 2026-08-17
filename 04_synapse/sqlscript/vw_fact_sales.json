@@ -1,0 +1,17 @@
+{
+	"name": "vw_fact_sales",
+	"properties": {
+		"content": {
+			"query": "CREATE OR ALTER VIEW gold.vw_fact_sales\nAS\nSELECT *\nFROM OPENROWSET(\n    BULK 'https://stshowroomanalytics01.dfs.core.windows.net/gold/fact_sales',\n    FORMAT = 'DELTA'\n) AS result;\n\nSELECT *\nFROM gold.vw_fact_sales;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "showroom_analytics",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
