@@ -2,6 +2,7 @@ CREATE OR ALTER VIEW gold.vw_fact_sales
 AS
 SELECT *
 FROM OPENROWSET(
-    BULK 'https://stshowroomanalytics01.dfs.core.windows.net/gold/fact_sales',
+    BULK 'fact_sales',
+    DATA_SOURCE = 'gold_storage',
     FORMAT = 'DELTA'
 ) AS result;
