@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "SELECT 'fact_sales' AS table_name, COUNT(*) AS record_count\nFROM gold.vw_fact_sales\n\nUNION ALL\nSELECT 'fact_inventory', COUNT(*)\nFROM gold.vw_fact_inventory\n\nUNION ALL\nSELECT 'fact_expenses', COUNT(*)\nFROM gold.vw_fact_expenses\n\nUNION ALL\nSELECT 'fact_leads', COUNT(*)\nFROM gold.vw_fact_leads\n\nUNION ALL\nSELECT 'dim_vehicle', COUNT(*)\nFROM gold.vw_dim_vehicle\n\nUNION ALL\nSELECT 'dim_vehicle_model', COUNT(*)\nFROM gold.vw_dim_vehicle_model\n\nUNION ALL\nSELECT 'dim_showroom', COUNT(*)\nFROM gold.vw_dim_showroom\n\nUNION ALL\nSELECT 'dim_salesperson', COUNT(*)\nFROM gold.vw_dim_salesperson\n\nUNION ALL\nSELECT 'dim_customer', COUNT(*)\nFROM gold.vw_dim_customer\n\nUNION ALL\nSELECT 'dim_campaign', COUNT(*)\nFROM gold.vw_dim_campaign\n\nUNION ALL\nSELECT 'dim_date', COUNT(*)\nFROM gold.vw_dim_date;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "showroom_analytics",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

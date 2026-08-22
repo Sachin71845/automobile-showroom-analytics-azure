@@ -1,0 +1,17 @@
+{
+	"name": "create_external_location",
+	"properties": {
+		"content": {
+			"query": "CREATE DATABASE SCOPED CREDENTIAL gold_storage_credential\nWITH IDENTITY = 'Managed Identity';\n\nCREATE EXTERNAL DATA SOURCE gold_storage\nWITH (\n    LOCATION = 'https://stshowroomanalytics01.dfs.core.windows.net/gold/',\n    CREDENTIAL = gold_storage_credential\n);\n\nSELECT TOP 10 *\nFROM OPENROWSET(\n    BULK 'fact_sales',\n    DATA_SOURCE = 'gold_storage',\n    FORMAT = 'DELTA'\n) AS result;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "showroom_analytics",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
